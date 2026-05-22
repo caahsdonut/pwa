@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#1A3FA0"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Caah's Donut"/>
+  <meta name="description" content="Caah's Donut – Fresh donuts, exclusive rewards & sweet treats. Order now!"/>
+  <title>Caah's Donut</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #1A3FA0;
+      --navy-dark: #102880;
+      --navy-light: #2954C8;
+      --yellow: #F5C800;
+      --yellow-dark: #D4A900;
+      --pink: #FF6B9D;
+      --red: #FF4444;
+      --green: #44DD88;
+      --white: #FFFFFF;
+      --off-white: #F8F6FF;
+      --gray-light: #F0EEF8;
+      --gray: #C8C4D8;
+      --text-dark: #1A1433;
+      --text-mid: #4A3F6E;
+      --shadow: 0 8px 32px rgba(26,63,160,0.18);
+      --shadow-sm: 0 2px 12px rgba(26,63,160,0.10);
+      --radius: 20px;
+      --radius-sm: 12px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:var(--navy)}
+    #app{width:100%;height:100%;position:relative;overflow:hidden}
+
+    /* ===== SPLASH SCREEN ===== */
+    #splash{position:fixed;inset:0;background:var(--navy);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+    .splash-stars{position:absolute;inset:0;pointer-events:none}
+    .star{position:absolute;color:var(--yellow);font-size:20px;animation:twinkle 2s infinite alternate}
+    .star:nth-child(1){top:8%;left:10%;animation-delay:0s}
+    .star:nth-child(2){top:12%;right:15%;animation-delay:.4s}
+    .star:nth-child(3){top:5%;left:50%;animation-delay:.8s}
+    .star:nth-child(4){bottom:25%;left:8%;animation-delay:1s}
+    .star:nth-child(5){bottom:20%;right:10%;animation-delay:.6s}
+    .star:nth-child(6){top:35%;right:5%;animation-delay:.2s}
+    .star:nth-child(7){top:40%;left:5%;animation-delay:1.2s}
+    @keyframes twinkle{0%{opacity:.3;transform:scale(.8)}100%{opacity:1;transform:scale(1.2)}}
+
+    .splash-donut-wrap{position:relative;width:160px;height:160px;margin-bottom:24px}
+    .splash-donut{width:160px;height:160px;animation:donutSpin 3s ease-in-out infinite,donutBounce 1.5s ease-in-out infinite}
+    @keyframes donutSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+    @keyframes donutBounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-16px) scale(1.05)}}
+
+    /* Combine both animations */
+    .splash-donut{animation:splashAnim 2s ease-in-out infinite}
+    @keyframes splashAnim{0%{transform:translateY(0) rotate(0deg) scale(1)}25%{transform:translateY(-14px) rotate(90deg) scale(1.05)}50%{transform:translateY(0) rotate(180deg) scale(1)}75%{transform:translateY(-8px) rotate(270deg) scale(1.03)}100%{transform:translateY(0) rotate(360deg) scale(1)}}
+
+    .splash-logo-text{text-align:center;animation:fadeInUp .8s .3s both}
+    .splash-logo-text h1{font-family:'Fraunces',serif;font-weight:900;font-size:38px;color:var(--yellow);letter-spacing:2px;text-shadow:0 2px 16px rgba(245,200,0,.4)}
+    .splash-logo-text p{font-size:13px;color:rgba(255,255,255,.7);letter-spacing:4px;text-transform:uppercase;margin-top:4px}
+    .splash-tagline{margin-top:16px;font-size:14px;color:rgba(255,255,255,.6);animation:fadeInUp .8s .6s both}
+    .splash-bar{margin-top:40px;width:180px;height:4px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden;animation:fadeInUp .8s .8s both}
+    .splash-bar-fill{height:100%;background:var(--yellow);border-radius:99px;animation:loadBar 2.5s ease-in-out forwards}
+    @keyframes loadBar{0%{width:0%}100%{width:100%}}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ===== SCREEN WRAPPER ===== */
+    .screen{position:absolute;inset:0;background:var(--off-white);display:none;flex-direction:column;overflow:hidden}
+    .screen.active{display:flex}
+    .screen-slide-in{animation:slideInRight .35s cubic-bezier(.4,0,.2,1) both}
+    .screen-slide-back{animation:slideInLeft .35s cubic-bezier(.4,0,.2,1) both}
+    @keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}
+    @keyframes slideInLeft{from{transform:translateX(-30%)}to{transform:translateX(0)}}
+
+    /* ===== LOGIN SCREEN ===== */
+    #loginScreen{background:var(--navy)}
+    .login-bg{position:absolute;inset:0;overflow:hidden}
+    .login-circle{position:absolute;border-radius:50%;background:rgba(255,255,255,.04)}
+    .login-circle:nth-child(1){width:350px;height:350px;top:-120px;right:-100px}
+    .login-circle:nth-child(2){width:250px;height:250px;bottom:-60px;left:-80px}
+    .login-circle:nth-child(3){width:180px;height:180px;bottom:30%;right:-40px}
+    .login-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 28px}
+    .login-logo-wrap{text-align:center;margin-bottom:40px}
+    .login-donut-svg{width:100px;height:100px;margin-bottom:16px;animation:floatAnim 3s ease-in-out infinite}
+    @keyframes floatAnim{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .login-logo-wrap h1{font-family:'Fraunces',serif;font-weight:900;font-size:32px;color:var(--yellow);letter-spacing:2px}
+    .login-logo-wrap p{font-size:11px;color:rgba(255,255,255,.55);letter-spacing:4px;text-transform:uppercase;margin-top:4px}
+    .login-form{width:100%;max-width:360px;animation:fadeInUp .6s .3s both}
+    .login-title{color:white;font-size:22px;font-weight:800;margin-bottom:6px}
+    .login-sub{color:rgba(255,255,255,.5);font-size:13px;margin-bottom:28px}
+    .input-group{margin-bottom:16px;position:relative}
+    .input-group label{display:block;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+    .input-group input{width:100%;padding:16px 20px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);color:white;font-family:'Nunito',sans-serif;font-size:15px;outline:none;transition:.3s}
+    .input-group input::placeholder{color:rgba(255,255,255,.35)}
+    .input-group input:focus{border-color:var(--yellow);background:rgba(255,255,255,.15)}
+    .btn-primary{width:100%;padding:17px;background:var(--yellow);border:none;border-radius:var(--radius-sm);color:var(--navy-dark);font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;transition:.3s;letter-spacing:.5px;margin-top:8px}
+    .btn-primary:active{transform:scale(.97);background:var(--yellow-dark)}
+    .login-error{color:#ff6b6b;font-size:13px;text-align:center;margin-top:12px;display:none}
+    .login-footer{margin-top:32px;text-align:center;color:rgba(255,255,255,.4);font-size:12px}
+
+    /* ===== HOME SCREEN ===== */
+    #homeScreen{background:var(--off-white)}
+    .home-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:90px}
+    .home-scroll::-webkit-scrollbar{display:none}
+
+    /* Header */
+    .home-header{background:var(--navy);padding:52px 20px 22px;position:relative;overflow:hidden}
+    .home-header-bg{position:absolute;top:-40px;right:-50px;width:180px;height:180px;border-radius:50%;background:rgba(245,200,0,.12)}
+    .home-header-bg2{position:absolute;bottom:-30px;left:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.06)}
+    .home-header-top{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
+    .home-greeting{color:rgba(255,255,255,.7);font-size:13px;margin-bottom:3px}
+    .home-username{color:white;font-weight:800;font-size:19px}
+    .header-icons{display:flex;gap:12px}
+    .header-icon-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative}
+    .badge{position:absolute;top:-2px;right:-2px;background:var(--pink);color:white;font-size:9px;font-weight:800;border-radius:99px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+    .home-points-card{margin:20px 20px 0;background:linear-gradient(135deg,#F5C800,#FFB800);border-radius:20px;padding:20px;position:relative;overflow:hidden;z-index:1}
+    .points-card-bg{position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.15)}
+    .points-card-label{font-size:12px;font-weight:700;color:var(--navy-dark);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+    .points-card-value{font-family:'Fraunces',serif;font-size:38px;font-weight:900;color:var(--navy);margin-bottom:2px}
+    .points-card-sub{font-size:12px;color:var(--navy-dark);opacity:.7}
+    .points-card-btn{position:absolute;right:20px;bottom:20px;top:50%;transform:translateY(-50%);background:var(--navy);color:var(--yellow);border:none;border-radius:99px;padding:8px 18px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer}
+
+    /* Sections */
+    .section-header{display:flex;justify-content:space-between;align-items:center;padding:22px 20px 12px}
+    .section-title{font-size:17px;font-weight:800;color:var(--text-dark)}
+    .section-link{font-size:13px;color:var(--navy-light);font-weight:700;background:none;border:none;cursor:pointer}
+
+    /* Category Tabs */
+    .cat-scroll{display:flex;gap:10px;padding:0 20px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .cat-scroll::-webkit-scrollbar{display:none}
+    .cat-chip{flex-shrink:0;padding:9px 18px;border-radius:99px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;border:none}
+    .cat-chip.active{background:var(--navy);color:white}
+    .cat-chip:not(.active){background:white;color:var(--text-mid);box-shadow:var(--shadow-sm)}
+
+    /* Featured Banner */
+    .featured-banner{margin:16px 20px;background:linear-gradient(135deg,var(--navy),var(--navy-light));border-radius:20px;padding:22px 20px;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden}
+    .featured-banner-bg{position:absolute;right:-10px;bottom:-10px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.08)}
+    .featured-text{flex:1;z-index:1}
+    .featured-badge{background:var(--yellow);color:var(--navy-dark);font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:99px;display:inline-block;margin-bottom:8px}
+    .featured-title{color:white;font-size:18px;font-weight:800;line-height:1.3;margin-bottom:6px}
+    .featured-price{color:var(--yellow);font-size:22px;font-family:'Fraunces',serif;font-weight:900}
+    .featured-img{width:90px;height:90px;flex-shrink:0;z-index:1}
+    .featured-order-btn{background:var(--yellow);color:var(--navy-dark);border:none;border-radius:99px;padding:10px 20px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:12px;display:inline-block}
+
+    /* Product Cards */
+    .products-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px}
+    .product-card{background:white;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;transition:.2s;position:relative}
+    .product-card:active{transform:scale(.97)}
+    .product-img-wrap{background:var(--gray-light);height:130px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+    .product-img{font-size:60px;line-height:1}
+    .product-tag{position:absolute;top:10px;left:10px;background:var(--pink);color:white;font-size:9px;font-weight:800;padding:3px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.5px}
+    .product-tag.new{background:var(--green);color:var(--text-dark)}
+    .product-info{padding:12px}
+    .product-name{font-size:13px;font-weight:800;color:var(--text-dark);margin-bottom:4px}
+    .product-desc{font-size:11px;color:var(--text-mid);margin-bottom:8px;line-height:1.4}
+    .product-footer{display:flex;align-items:center;justify-content:space-between}
+    .product-price{font-family:'Fraunces',serif;font-size:16px;font-weight:700;color:var(--navy)}
+    .add-btn{width:28px;height:28px;background:var(--navy);color:var(--yellow);border:none;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:800;transition:.2s}
+    .add-btn:active{background:var(--navy-light);transform:scale(.9)}
+
+    /* Promo Strip */
+    .promo-strip{margin:8px 20px;background:var(--navy-dark);border-radius:var(--radius-sm);padding:14px 18px;display:flex;align-items:center;gap:12px}
+    .promo-strip-icon{font-size:28px}
+    .promo-strip-text strong{color:var(--yellow);font-size:14px;font-weight:800;display:block}
+    .promo-strip-text span{color:rgba(255,255,255,.7);font-size:12px}
+
+    /* ===== BOTTOM NAV ===== */
+    .bottom-nav{position:absolute;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--gray-light);display:flex;padding:10px 0;padding-bottom:calc(10px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(26,63,160,.08)}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;background:none;border:none;padding:4px}
+    .nav-icon{font-size:22px;transition:.2s}
+    .nav-label{font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;color:var(--gray);transition:.2s}
+    .nav-item.active .nav-icon{transform:scale(1.1)}
+    .nav-item.active .nav-label{color:var(--navy)}
+
+    /* ===== MENU / ORDER SCREEN ===== */
+    #menuScreen{background:var(--off-white)}
+    .menu-header{background:var(--navy);padding:52px 20px 20px}
+    .menu-header h2{color:white;font-family:'Fraunces',serif;font-size:26px;font-weight:900;margin-bottom:4px}
+    .menu-header p{color:rgba(255,255,255,.6);font-size:13px}
+    .menu-search{margin:16px 20px 8px;position:relative}
+    .menu-search input{width:100%;padding:14px 20px 14px 46px;border:none;border-radius:var(--radius-sm);background:white;box-shadow:var(--shadow-sm);font-family:'Nunito',sans-serif;font-size:14px;outline:none;color:var(--text-dark)}
+    .menu-search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:18px}
+    .menu-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:90px}
+    .menu-scroll::-webkit-scrollbar{display:none}
+    .menu-cat-title{padding:20px 20px 10px;font-size:16px;font-weight:800;color:var(--text-dark)}
+    .menu-items{padding:0 20px;display:flex;flex-direction:column;gap:10px}
+    .menu-item{background:white;border-radius:var(--radius-sm);padding:14px;display:flex;gap:14px;box-shadow:var(--shadow-sm);cursor:pointer;transition:.2s}
+    .menu-item:active{transform:scale(.98)}
+    .menu-item-emoji{width:72px;height:72px;background:var(--gray-light);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:42px;flex-shrink:0}
+    .menu-item-info{flex:1}
+    .menu-item-name{font-size:14px;font-weight:800;color:var(--text-dark);margin-bottom:4px}
+    .menu-item-desc{font-size:12px;color:var(--text-mid);line-height:1.4;margin-bottom:8px}
+    .menu-item-footer{display:flex;align-items:center;justify-content:space-between}
+    .menu-item-price{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--navy)}
+
+    /* ===== REWARDS SCREEN ===== */
+    #rewardsScreen{background:var(--off-white)}
+    .rewards-header{background:linear-gradient(135deg,var(--navy),var(--navy-light));padding:52px 20px 30px;text-align:center;position:relative;overflow:hidden}
+    .rewards-header-bg{position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(245,200,0,.15)}
+    .rewards-header h2{color:white;font-family:'Fraunces',serif;font-size:26px;font-weight:900;position:relative;z-index:1;margin-bottom:4px}
+    .rewards-header p{color:rgba(255,255,255,.65);font-size:13px;position:relative;z-index:1}
+    .points-display{margin:20px;background:var(--yellow);border-radius:20px;padding:24px;text-align:center;position:relative;overflow:hidden}
+    .points-display-bg{position:absolute;right:-20px;top:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.2)}
+    .points-big{font-family:'Fraunces',serif;font-size:56px;font-weight:900;color:var(--navy);line-height:1}
+    .points-label{color:var(--navy-dark);font-size:13px;font-weight:700;margin-top:4px}
+    .rewards-scroll{flex:1;overflow-y:auto;padding-bottom:90px}
+    .rewards-scroll::-webkit-scrollbar{display:none}
+    .reward-tier{margin:16px 20px;background:white;border-radius:20px;padding:20px;box-shadow:var(--shadow-sm)}
+    .tier-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .tier-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}
+    .tier-icon.bronze{background:#ffecd2}
+    .tier-icon.silver{background:#e8e8f0}
+    .tier-icon.gold{background:#fff3c4}
+    .tier-name{font-size:15px;font-weight:800;color:var(--text-dark)}
+    .tier-pts{font-size:12px;color:var(--text-mid);font-weight:600}
+    .tier-progress{height:8px;background:var(--gray-light);border-radius:99px;overflow:hidden;margin-bottom:8px}
+    .tier-progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--navy),var(--navy-light));transition:width 1s ease}
+    .tier-progress-label{font-size:11px;color:var(--text-mid);text-align:right}
+    .voucher-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px}
+    .voucher-card{background:white;border-radius:var(--radius-sm);padding:16px;box-shadow:var(--shadow-sm);border:1.5px dashed var(--gray);cursor:pointer;text-align:center;transition:.2s}
+    .voucher-card:active{transform:scale(.97)}
+    .voucher-emoji{font-size:32px;margin-bottom:8px}
+    .voucher-name{font-size:12px;font-weight:800;color:var(--text-dark);margin-bottom:4px}
+    .voucher-pts{font-size:11px;color:var(--navy);font-weight:700}
+    .voucher-pts span{color:var(--text-mid);font-weight:400}
+
+    /* ===== CART SCREEN ===== */
+    #cartScreen{background:var(--off-white)}
+    .cart-header{background:var(--navy);padding:52px 20px 20px;display:flex;align-items:center;gap:12px}
+    .back-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:white;font-size:20px}
+    .cart-header h2{color:white;font-family:'Fraunces',serif;font-size:24px;font-weight:900}
+    .cart-scroll{flex:1;overflow-y:auto;padding:16px 20px;padding-bottom:20px}
+    .cart-scroll::-webkit-scrollbar{display:none}
+    .cart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;text-align:center}
+    .cart-empty-emoji{font-size:64px;margin-bottom:16px;opacity:.5}
+    .cart-empty-text{font-size:16px;font-weight:700;color:var(--text-mid);margin-bottom:6px}
+    .cart-empty-sub{font-size:13px;color:var(--gray)}
+    .cart-item{background:white;border-radius:var(--radius-sm);padding:14px;display:flex;gap:12px;margin-bottom:10px;box-shadow:var(--shadow-sm)}
+    .cart-item-emoji{width:64px;height:64px;background:var(--gray-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0}
+    .cart-item-info{flex:1}
+    .cart-item-name{font-size:14px;font-weight:800;color:var(--text-dark);margin-bottom:4px}
+    .cart-item-price{font-family:'Fraunces',serif;font-size:16px;color:var(--navy);font-weight:700}
+    .cart-qty{display:flex;align-items:center;gap:10px;margin-top:8px}
+    .qty-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--navy);background:white;color:var(--navy);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .qty-val{font-size:15px;font-weight:800;color:var(--text-dark);min-width:20px;text-align:center}
+    .cart-summary{background:white;border-radius:var(--radius);padding:20px;margin-top:8px;box-shadow:var(--shadow-sm)}
+    .summary-row{display:flex;justify-content:space-between;margin-bottom:10px;font-size:14px;color:var(--text-mid)}
+    .summary-row.total{font-size:17px;font-weight:800;color:var(--text-dark);padding-top:10px;border-top:1.5px solid var(--gray-light)}
+    .checkout-wrap{padding:16px 20px calc(16px + env(safe-area-inset-bottom));background:white;border-top:1px solid var(--gray-light)}
+    .checkout-btn{width:100%;padding:17px;background:var(--navy);border:none;border-radius:var(--radius-sm);color:var(--yellow);font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+    .checkout-btn:active{background:var(--navy-light)}
+
+    /* ===== PROFILE SCREEN ===== */
+    #profileScreen{background:var(--off-white)}
+    .profile-header{background:var(--navy);padding:52px 20px 30px;text-align:center;position:relative;overflow:hidden}
+    .profile-header-bg{position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:rgba(245,200,0,.1)}
+    .profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 12px;border:4px solid rgba(255,255,255,.3);position:relative;z-index:1}
+    .profile-name{color:white;font-size:20px;font-weight:800;position:relative;z-index:1}
+    .profile-member{color:rgba(255,255,255,.6);font-size:13px;position:relative;z-index:1}
+    .profile-scroll{flex:1;overflow-y:auto;padding:16px 20px;padding-bottom:90px}
+    .profile-scroll::-webkit-scrollbar{display:none}
+    .profile-section-title{font-size:12px;font-weight:800;color:var(--text-mid);letter-spacing:1px;text-transform:uppercase;margin:16px 0 10px}
+    .profile-card{background:white;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:14px}
+    .profile-item{display:flex;align-items:center;gap:14px;padding:16px;cursor:pointer;transition:.2s;border-bottom:1px solid var(--gray-light)}
+    .profile-item:last-child{border-bottom:none}
+    .profile-item:active{background:var(--gray-light)}
+    .profile-item-icon{width:38px;height:38px;border-radius:10px;background:var(--gray-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .profile-item-text{flex:1}
+    .profile-item-name{font-size:14px;font-weight:700;color:var(--text-dark)}
+    .profile-item-sub{font-size:12px;color:var(--text-mid)}
+    .profile-item-arrow{color:var(--gray);font-size:18px}
+    .logout-btn{width:100%;padding:17px;background:white;border:2px solid #ff6b6b;border-radius:var(--radius-sm);color:#ff6b6b;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;margin-top:8px;transition:.2s}
+    .logout-btn:active{background:#ff6b6b;color:white}
+
+    /* Toast */
+    .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text-dark);color:white;padding:12px 24px;border-radius:99px;font-size:13px;font-weight:700;opacity:0;transition:.3s;z-index:1000;white-space:nowrap;pointer-events:none}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    /* Order success modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:flex-end}
+    .modal-overlay.open{display:flex}
+    .modal-sheet{background:white;border-radius:24px 24px 0 0;padding:32px 24px calc(32px + env(safe-area-inset-bottom));width:100%;text-align:center;animation:slideUp .35s cubic-bezier(.4,0,.2,1)}
+    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .modal-emoji{font-size:64px;margin-bottom:16px}
+    .modal-title{font-family:'Fraunces',serif;font-size:26px;font-weight:900;color:var(--text-dark);margin-bottom:8px}
+    .modal-sub{font-size:14px;color:var(--text-mid);margin-bottom:24px;line-height:1.6}
+    .modal-btn{width:100%;padding:16px;background:var(--navy);border:none;border-radius:var(--radius-sm);color:var(--yellow);font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer}
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SPLASH -->
+  <div id="splash">
+    <div class="splash-stars">
+      <span class="star">✦</span><span class="star">✧</span><span class="star">★</span>
+      <span class="star">✦</span><span class="star">✧</span><span class="star">★</span><span class="star">✦</span>
+    </div>
+    <div class="splash-donut-wrap">
+      <svg class="splash-donut" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="80" cy="80" r="60" fill="#F5C800"/>
+        <circle cx="80" cy="80" r="25" fill="#1A3FA0"/>
+        <ellipse cx="80" cy="46" rx="36" ry="16" fill="white" opacity=".95"/>
+        <path d="M52 48 Q58 64 54 68" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <path d="M108 48 Q102 64 106 68" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <path d="M80 30 Q74 44 78 52" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <rect x="64" y="38" width="11" height="4" rx="2" fill="#FF6B9D" transform="rotate(-20 69 40)"/>
+        <rect x="86" y="35" width="11" height="4" rx="2" fill="#FF4444" transform="rotate(15 91 37)"/>
+        <rect x="74" y="31" width="10" height="4" rx="2" fill="#44DD88" transform="rotate(-35 79 33)"/>
+        <rect x="94" y="44" width="10" height="4" rx="2" fill="#FF6B9D" transform="rotate(25 99 46)"/>
+        <rect x="57" y="33" width="10" height="4" rx="2" fill="#FFAA00" transform="rotate(10 62 35)"/>
+      </svg>
+    </div>
+    <div class="splash-logo-text">
+      <h1>CAAH'S</h1>
+      <p>Donut</p>
+    </div>
+    <p class="splash-tagline">🍩 Fresh donuts & sweet rewards</p>
+    <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="loginScreen" class="screen">
+    <div class="login-bg">
+      <div class="login-circle"></div><div class="login-circle"></div><div class="login-circle"></div>
+    </div>
+    <div class="login-content">
+      <div class="login-logo-wrap">
+        <svg class="login-donut-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="80" cy="80" r="60" fill="#F5C800"/>
+          <circle cx="80" cy="80" r="25" fill="#1A3FA0"/>
+          <ellipse cx="80" cy="46" rx="36" ry="16" fill="white" opacity=".95"/>
+          <path d="M52 48 Q58 64 54 68" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
+          <path d="M108 48 Q102 64 106 68" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
+          <rect x="64" y="38" width="11" height="4" rx="2" fill="#FF6B9D" transform="rotate(-20 69 40)"/>
+          <rect x="86" y="35" width="11" height="4" rx="2" fill="#FF4444" transform="rotate(15 91 37)"/>
+          <rect x="74" y="31" width="10" height="4" rx="2" fill="#44DD88" transform="rotate(-35 79 33)"/>
+        </svg>
+        <h1>CAAH'S</h1>
+        <p>Donut</p>
+      </div>
+      <div class="login-form">
+        <h2 class="login-title">Welcome back! 👋</h2>
+        <p class="login-sub">Sign in to earn rewards & order your favourites</p>
+        <div class="input-group">
+          <label>Username</label>
+          <input type="text" id="usernameInput" placeholder="Enter username" autocomplete="username"/>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="current-password"/>
+        </div>
+        <button class="btn-primary" onclick="handleLogin()">Sign In 🍩</button>
+        <p class="login-error" id="loginError">❌ Invalid username or password</p>
+        <div class="login-footer">By signing in, you agree to our Terms & Privacy Policy</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div id="homeScreen" class="screen">
+    <div class="home-scroll" id="homeScroll">
+      <!-- Header -->
+      <div class="home-header">
+        <div class="home-header-bg"></div><div class="home-header-bg2"></div>
+        <div class="home-header-top">
+          <div>
+            <p class="home-greeting">Good morning ☀️</p>
+            <p class="home-username" id="homeUsername">Donut Lover</p>
+          </div>
+          <div class="header-icons">
+            <button class="header-icon-btn" onclick="showNotifToast()">
+              🔔 <span class="badge" id="notifBadge">2</span>
+            </button>
+            <button class="header-icon-btn" onclick="showTab('cart')">
+              🛒 <span class="badge" id="cartBadge" style="display:none">0</span>
+            </button>
+          </div>
+        </div>
+        <!-- Points Card -->
+        <div class="home-points-card" style="margin-top:18px">
+          <div class="points-card-bg"></div>
+          <p class="points-card-label">🌟 Donut Points</p>
+          <p class="points-card-value" id="homePoints">250</p>
+          <p class="points-card-sub">Silver Member · 150 pts to Gold</p>
+          <button class="points-card-btn" onclick="showTab('rewards')">Redeem →</button>
+        </div>
+      </div>
+
+      <!-- Promo Strip -->
+      <div class="promo-strip">
+        <span class="promo-strip-icon">🎉</span>
+        <div class="promo-strip-text">
+          <strong>FREE Donut Friday!</strong>
+          <span>Buy 3 get 1 free every Friday this month</span>
+        </div>
+      </div>
+
+      <!-- Featured -->
+      <div class="featured-banner">
+        <div class="featured-banner-bg"></div>
+        <div class="featured-text">
+          <span class="featured-badge">⭐ Fan Favourite</span>
+          <p class="featured-title">Classic Glazed Box of 6</p>
+          <p class="featured-price">RM 19.90</p>
+          <button class="featured-order-btn" onclick="addFeaturedToCart()">Order Now →</button>
+        </div>
+        <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" class="featured-img">
+          <circle cx="80" cy="80" r="60" fill="#F5C800"/>
+          <circle cx="80" cy="80" r="25" fill="#1A3FA0"/>
+          <ellipse cx="80" cy="46" rx="36" ry="16" fill="white" opacity=".95"/>
+          <path d="M52 48 Q58 64 54 68" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
+          <path d="M108 48 Q102 64 106 68" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
+          <rect x="64" y="38" width="11" height="4" rx="2" fill="#FF6B9D" transform="rotate(-20 69 40)"/>
+          <rect x="86" y="35" width="11" height="4" rx="2" fill="#FF4444" transform="rotate(15 91 37)"/>
+          <rect x="74" y="31" width="10" height="4" rx="2" fill="#44DD88" transform="rotate(-35 79 33)"/>
+        </svg>
+      </div>
+
+      <!-- Categories -->
+      <div class="section-header"><p class="section-title">Browse Menu</p><button class="section-link" onclick="showTab('menu')">See all</button></div>
+      <div class="cat-scroll">
+        <button class="cat-chip active" onclick="filterCat(this,'all')">🍩 All</button>
+        <button class="cat-chip" onclick="filterCat(this,'classic')">✨ Classic</button>
+        <button class="cat-chip" onclick="filterCat(this,'specialty')">🌈 Specialty</button>
+        <button class="cat-chip" onclick="filterCat(this,'drink')">☕ Drinks</button>
+        <button class="cat-chip" onclick="filterCat(this,'box')">📦 Boxes</button>
+      </div>
+
+      <!-- Products -->
+      <div class="section-header" style="padding-top:16px"><p class="section-title">Popular Now 🔥</p></div>
+      <div class="products-grid" id="productsGrid"></div>
+      <div style="height:20px"></div>
+    </div>
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" id="nav-home" onclick="showTab('home')">
+        <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+      </button>
+      <button class="nav-item" id="nav-menu" onclick="showTab('menu')">
+        <span class="nav-icon">🍩</span><span class="nav-label">Order</span>
+      </button>
+      <button class="nav-item" id="nav-rewards" onclick="showTab('rewards')">
+        <span class="nav-icon">⭐</span><span class="nav-label">Rewards</span>
+      </button>
+      <button class="nav-item" id="nav-cart" onclick="showTab('cart')">
+        <span class="nav-icon">🛒</span><span class="nav-label">Cart</span>
+      </button>
+      <button class="nav-item" id="nav-profile" onclick="showTab('profile')">
+        <span class="nav-icon">👤</span><span class="nav-label">Me</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- MENU -->
+  <div id="menuScreen" class="screen">
+    <div class="menu-header">
+      <h2>Our Menu 🍩</h2>
+      <p>Handcrafted with love daily</p>
+    </div>
+    <div class="menu-search">
+      <span class="menu-search-icon">🔍</span>
+      <input type="text" placeholder="Search donuts..." id="menuSearch" oninput="filterMenu(this.value)"/>
+    </div>
+    <div class="menu-scroll" id="menuList"></div>
+    <nav class="bottom-nav">
+      <button class="nav-item" id="mnav-home" onclick="showTab('home')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+      <button class="nav-item active" id="mnav-menu" onclick="showTab('menu')"><span class="nav-icon">🍩</span><span class="nav-label">Order</span></button>
+      <button class="nav-item" id="mnav-rewards" onclick="showTab('rewards')"><span class="nav-icon">⭐</span><span class="nav-label">Rewards</span></button>
+      <button class="nav-item" id="mnav-cart" onclick="showTab('cart')"><span class="nav-icon">🛒</span><span class="nav-label">Cart</span></button>
+      <button class="nav-item" id="mnav-profile" onclick="showTab('profile')"><span class="nav-icon">👤</span><span class="nav-label">Me</span></button>
+    </nav>
+  </div>
+
+  <!-- REWARDS -->
+  <div id="rewardsScreen" class="screen">
+    <div class="rewards-header">
+      <div class="rewards-header-bg"></div>
+      <h2>🌟 Rewards</h2>
+      <p>Earn points with every order</p>
+    </div>
+    <div class="rewards-scroll">
+      <div class="points-display">
+        <div class="points-display-bg"></div>
+        <p class="points-big" id="rewardsPoints">250</p>
+        <p class="points-label">Donut Points · Silver Member</p>
+      </div>
+      <div class="reward-tier">
+        <div class="tier-header">
+          <div class="tier-icon silver">🥈</div>
+          <div>
+            <p class="tier-name">Silver Member</p>
+            <p class="tier-pts">200 – 499 points</p>
+          </div>
+        </div>
+        <div class="tier-progress"><div class="tier-progress-fill" style="width:50%"></div></div>
+        <p class="tier-progress-label">150 pts to Gold</p>
+      </div>
+      <div class="section-header"><p class="section-title">Redeem Vouchers</p></div>
+      <div class="voucher-grid">
+        <div class="voucher-card" onclick="redeemVoucher('Free Donut',100)">
+          <div class="voucher-emoji">🍩</div>
+          <p class="voucher-name">Free Donut</p>
+          <p class="voucher-pts">100 pts <span>required</span></p>
+        </div>
+        <div class="voucher-card" onclick="redeemVoucher('RM 5 Off',200)">
+          <div class="voucher-emoji">💰</div>
+          <p class="voucher-name">RM 5 Off</p>
+          <p class="voucher-pts">200 pts <span>required</span></p>
+        </div>
+        <div class="voucher-card" onclick="redeemVoucher('Box of 6',350)">
+          <div class="voucher-emoji">📦</div>
+          <p class="voucher-name">Box of 6</p>
+          <p class="voucher-pts">350 pts <span>required</span></p>
+        </div>
+        <div class="voucher-card" onclick="redeemVoucher('Free Drink',150)">
+          <div class="voucher-emoji">☕</div>
+          <p class="voucher-name">Free Drink</p>
+          <p class="voucher-pts">150 pts <span>required</span></p>
+        </div>
+      </div>
+      <div class="section-header"><p class="section-title">How to Earn</p></div>
+      <div style="padding:0 20px 20px;display:flex;flex-direction:column;gap:10px">
+        <div style="background:white;border-radius:14px;padding:16px;display:flex;gap:14px;box-shadow:var(--shadow-sm)">
+          <span style="font-size:28px">🛒</span>
+          <div><p style="font-size:14px;font-weight:800;color:var(--text-dark)">Every Purchase</p><p style="font-size:12px;color:var(--text-mid)">Earn 1 point per RM 1 spent</p></div>
+        </div>
+        <div style="background:white;border-radius:14px;padding:16px;display:flex;gap:14px;box-shadow:var(--shadow-sm)">
+          <span style="font-size:28px">🎂</span>
+          <div><p style="font-size:14px;font-weight:800;color:var(--text-dark)">Birthday Bonus</p><p style="font-size:12px;color:var(--text-mid)">50 bonus points on your birthday</p></div>
+        </div>
+        <div style="background:white;border-radius:14px;padding:16px;display:flex;gap:14px;box-shadow:var(--shadow-sm)">
+          <span style="font-size:28px">📣</span>
+          <div><p style="font-size:14px;font-weight:800;color:var(--text-dark)">Refer a Friend</p><p style="font-size:12px;color:var(--text-mid)">Get 30 pts for each friend referred</p></div>
+        </div>
+      </div>
+    </div>
+    <nav class="bottom-nav">
+      <button class="nav-item" id="rnav-home" onclick="showTab('home')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+      <button class="nav-item" id="rnav-menu" onclick="showTab('menu')"><span class="nav-icon">🍩</span><span class="nav-label">Order</span></button>
+      <button class="nav-item active" id="rnav-rewards" onclick="showTab('rewards')"><span class="nav-icon">⭐</span><span class="nav-label">Rewards</span></button>
+      <button class="nav-item" id="rnav-cart" onclick="showTab('cart')"><span class="nav-icon">🛒</span><span class="nav-label">Cart</span></button>
+      <button class="nav-item" id="rnav-profile" onclick="showTab('profile')"><span class="nav-icon">👤</span><span class="nav-label">Me</span></button>
+    </nav>
+  </div>
+
+  <!-- CART -->
+  <div id="cartScreen" class="screen">
+    <div class="cart-header">
+      <h2>My Cart 🛒</h2>
+    </div>
+    <div class="cart-scroll" id="cartList"></div>
+    <div id="checkoutWrap" class="checkout-wrap" style="display:none">
+      <div id="cartSummary"></div>
+      <button class="checkout-btn" onclick="placeOrder()">Place Order &nbsp;🍩</button>
+    </div>
+    <nav class="bottom-nav">
+      <button class="nav-item" id="cnav-home" onclick="showTab('home')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+      <button class="nav-item" id="cnav-menu" onclick="showTab('menu')"><span class="nav-icon">🍩</span><span class="nav-label">Order</span></button>
+      <button class="nav-item" id="cnav-rewards" onclick="showTab('rewards')"><span class="nav-icon">⭐</span><span class="nav-label">Rewards</span></button>
+      <button class="nav-item active" id="cnav-cart" onclick="showTab('cart')"><span class="nav-icon">🛒</span><span class="nav-label">Cart</span></button>
+      <button class="nav-item" id="cnav-profile" onclick="showTab('profile')"><span class="nav-icon">👤</span><span class="nav-label">Me</span></button>
+    </nav>
+  </div>
+
+  <!-- PROFILE -->
+  <div id="profileScreen" class="screen">
+    <div class="profile-header">
+      <div class="profile-header-bg"></div>
+      <div class="profile-avatar">🍩</div>
+      <p class="profile-name" id="profileName">Donut Lover</p>
+      <p class="profile-member">🥈 Silver Member · 250 pts</p>
+    </div>
+    <div class="profile-scroll">
+      <p class="profile-section-title">Account</p>
+      <div class="profile-card">
+        <div class="profile-item" onclick="showToast('Profile editing coming soon!')">
+          <div class="profile-item-icon">👤</div>
+          <div class="profile-item-text"><p class="profile-item-name">Edit Profile</p><p class="profile-item-sub">Update your info</p></div>
+          <span class="profile-item-arrow">›</span>
+        </div>
+        <div class="profile-item" onclick="showToast('Order history coming soon!')">
+          <div class="profile-item-icon">📋</div>
+          <div class="profile-item-text"><p class="profile-item-name">Order History</p><p class="profile-item-sub">View past orders</p></div>
+          <span class="profile-item-arrow">›</span>
+        </div>
+        <div class="profile-item" onclick="showToast('Saved addresses coming soon!')">
+          <div class="profile-item-icon">📍</div>
+          <div class="profile-item-text"><p class="profile-item-name">Delivery Address</p><p class="profile-item-sub">Manage your addresses</p></div>
+          <span class="profile-item-arrow">›</span>
+        </div>
+      </div>
+      <p class="profile-section-title">Support</p>
+      <div class="profile-card">
+        <div class="profile-item" onclick="showToast('Help coming soon!')">
+          <div class="profile-item-icon">💬</div>
+          <div class="profile-item-text"><p class="profile-item-name">Help & Support</p><p class="profile-item-sub">FAQs & live chat</p></div>
+          <span class="profile-item-arrow">›</span>
+        </div>
+        <div class="profile-item" onclick="showToast('About Caah\'s Donut!')">
+          <div class="profile-item-icon">🍩</div>
+          <div class="profile-item-text"><p class="profile-item-name">About Us</p><p class="profile-item-sub">Our story & locations</p></div>
+          <span class="profile-item-arrow">›</span>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+    </div>
+    <nav class="bottom-nav">
+      <button class="nav-item" id="pnav-home" onclick="showTab('home')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+      <button class="nav-item" id="pnav-menu" onclick="showTab('menu')"><span class="nav-icon">🍩</span><span class="nav-label">Order</span></button>
+      <button class="nav-item" id="pnav-rewards" onclick="showTab('rewards')"><span class="nav-icon">⭐</span><span class="nav-label">Rewards</span></button>
+      <button class="nav-item" id="pnav-cart" onclick="showTab('cart')"><span class="nav-icon">🛒</span><span class="nav-label">Cart</span></button>
+      <button class="nav-item active" id="pnav-profile" onclick="showTab('profile')"><span class="nav-icon">👤</span><span class="nav-label">Me</span></button>
+    </nav>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Order Success Modal -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal-sheet">
+      <div class="modal-emoji">🎉</div>
+      <h2 class="modal-title">Order Placed!</h2>
+      <p class="modal-sub">Your donuts are being freshly prepared.<br>Estimated time: <strong>20–30 minutes</strong> 🍩</p>
+      <button class="modal-btn" onclick="closeOrderModal()">Track My Order →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== DATA =====
+const PRODUCTS = [
+  {id:1,name:"Classic Glazed",emoji:"🍩",price:3.90,desc:"Original glazed ring donut",cat:"classic",tag:""},
+  {id:2,name:"Strawberry Pink",emoji:"🍓",price:4.50,desc:"Pink icing with strawberry drizzle",cat:"specialty",tag:"hot"},
+  {id:3,name:"Choco Sprinkle",emoji:"🍫",price:4.50,desc:"Dark choc glaze & rainbow sprinkles",cat:"specialty",tag:""},
+  {id:4,name:"Matcha Dream",emoji:"🍵",price:5.00,desc:"Matcha glaze with white choc drizzle",cat:"specialty",tag:"new"},
+  {id:5,name:"Kopi-O Donut",emoji:"☕",price:4.80,desc:"Local kopi flavoured cream filled",cat:"specialty",tag:"new"},
+  {id:6,name:"Box of 6",emoji:"📦",price:19.90,desc:"Mix of 6 classic donuts",cat:"box",tag:""},
+  {id:7,name:"Box of 12",emoji:"🎁",price:35.90,desc:"Party box – 12 assorted donuts",cat:"box",tag:""},
+  {id:8,name:"Iced Latte",emoji:"🧋",price:8.50,desc:"Smooth cold brew iced latte",cat:"drink",tag:""},
+];
+
+const MENU_CATS = ["Classic Glazed","Specialty Flavours","Drinks","Boxes & Combos"];
+const MENU_DATA = {
+  "Classic Glazed": PRODUCTS.filter(p=>p.cat==="classic"),
+  "Specialty Flavours": PRODUCTS.filter(p=>p.cat==="specialty"),
+  "Drinks": PRODUCTS.filter(p=>p.cat==="drink"),
+  "Boxes & Combos": PRODUCTS.filter(p=>p.cat==="box"),
+};
+
+let cart = [];
+let points = 250;
+let currentUser = null;
+let currentTab = 'home';
+
+// ===== SPLASH =====
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.getElementById('splash').style.opacity = '0';
+    document.getElementById('splash').style.transition = 'opacity .5s';
+    setTimeout(() => {
+      document.getElementById('splash').style.display = 'none';
+      const saved = sessionStorage.getItem('caahUser');
+      if (saved) {
+        currentUser = saved;
+        showHome();
+      } else {
+        document.getElementById('loginScreen').classList.add('active');
+      }
+    }, 500);
+  }, 3000);
+});
+
+// ===== AUTH =====
+function handleLogin() {
+  const u = document.getElementById('usernameInput').value.trim();
+  const p = document.getElementById('passwordInput').value;
+  if (u === 'user' && p === 'pass$123') {
+    currentUser = u;
+    sessionStorage.setItem('caahUser', u);
+    document.getElementById('loginScreen').classList.remove('active');
+    showHome();
+  } else {
+    const err = document.getElementById('loginError');
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+document.getElementById('passwordInput').addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
+document.getElementById('usernameInput').addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
+
+function handleLogout() {
+  if (confirm('Sign out from Caah\'s Donut?')) {
+    sessionStorage.removeItem('caahUser');
+    currentUser = null;
+    cart = [];
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById('loginScreen').classList.add('active');
+  }
+}
+
+// ===== HOME =====
+function showHome() {
+  renderProducts(PRODUCTS);
+  renderMenu();
+  document.getElementById('homeUsername').textContent = currentUser === 'user' ? 'Donut Lover' : currentUser;
+  document.getElementById('profileName').textContent = currentUser === 'user' ? 'Donut Lover' : currentUser;
+  showTab('home');
+}
+
+function renderProducts(products) {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = products.slice(0,6).map(p => `
+    <div class="product-card" onclick="addToCart(${p.id})">
+      <div class="product-img-wrap">
+        <span class="product-img">${p.emoji}</span>
+        ${p.tag ? `<span class="product-tag ${p.tag==='new'?'new':''}">${p.tag==='hot'?'🔥 Hot':'🆕 New'}</span>` : ''}
+      </div>
+      <div class="product-info">
+        <p class="product-name">${p.name}</p>
+        <p class="product-desc">${p.desc}</p>
+        <div class="product-footer">
+          <span class="product-price">RM ${p.price.toFixed(2)}</span>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function filterCat(el, cat) {
+  document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  const filtered = cat==='all' ? PRODUCTS : PRODUCTS.filter(p=>p.cat===cat);
+  renderProducts(filtered);
+}
+
+// ===== MENU =====
+function renderMenu(search='') {
+  const list = document.getElementById('menuList');
+  let html = '';
+  for (const [cat, items] of Object.entries(MENU_DATA)) {
+    const filtered = search ? items.filter(p=>p.name.toLowerCase().includes(search.toLowerCase())) : items;
+    if (!filtered.length) continue;
+    html += `<p class="menu-cat-title">${cat}</p><div class="menu-items">`;
+    html += filtered.map(p=>`
+      <div class="menu-item" onclick="addToCart(${p.id})">
+        <div class="menu-item-emoji">${p.emoji}</div>
+        <div class="menu-item-info">
+          <p class="menu-item-name">${p.name}</p>
+          <p class="menu-item-desc">${p.desc}</p>
+          <div class="menu-item-footer">
+            <span class="menu-item-price">RM ${p.price.toFixed(2)}</span>
+            <button class="add-btn" style="background:var(--navy)">+</button>
+          </div>
+        </div>
+      </div>`).join('');
+    html += '</div>';
+  }
+  list.innerHTML = html || '<p style="text-align:center;padding:40px;color:var(--gray)">No items found</p>';
+}
+
+function filterMenu(val) { renderMenu(val); }
+
+// ===== CART =====
+function addToCart(id) {
+  const p = PRODUCTS.find(x=>x.id===id);
+  if (!p) return;
+  const existing = cart.find(x=>x.id===id);
+  if (existing) existing.qty++;
+  else cart.push({...p, qty:1});
+  updateCartBadge();
+  showToast(`${p.emoji} ${p.name} added to cart!`);
+}
+
+function addFeaturedToCart() { addToCart(6); }
+
+function updateCartBadge() {
+  const total = cart.reduce((a,b)=>a+b.qty,0);
+  const badge = document.getElementById('cartBadge');
+  if (total > 0) { badge.style.display='flex'; badge.textContent=total; }
+  else badge.style.display='none';
+}
+
+function renderCart() {
+  const list = document.getElementById('cartList');
+  const wrap = document.getElementById('checkoutWrap');
+  if (!cart.length) {
+    list.innerHTML = `<div class="cart-empty"><div class="cart-empty-emoji">🛒</div><p class="cart-empty-text">Your cart is empty</p><p class="cart-empty-sub">Add some donuts to get started!</p></div>`;
+    wrap.style.display = 'none';
+    return;
+  }
+  list.innerHTML = cart.map((item,i)=>`
+    <div class="cart-item">
+      <div class="cart-item-emoji">${item.emoji}</div>
+      <div class="cart-item-info">
+        <p class="cart-item-name">${item.name}</p>
+        <p class="cart-item-price">RM ${item.price.toFixed(2)}</p>
+        <div class="cart-qty">
+          <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
+          <span class="qty-val">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
+        </div>
+      </div>
+    </div>`).join('');
+  const subtotal = cart.reduce((a,b)=>a+(b.price*b.qty),0);
+  const delivery = 3.00;
+  const total = subtotal + delivery;
+  document.getElementById('cartSummary').innerHTML = `
+    <div class="cart-summary">
+      <div class="summary-row"><span>Subtotal</span><span>RM ${subtotal.toFixed(2)}</span></div>
+      <div class="summary-row"><span>Delivery</span><span>RM ${delivery.toFixed(2)}</span></div>
+      <div class="summary-row total"><span>Total</span><span>RM ${total.toFixed(2)}</span></div>
+    </div>`;
+  wrap.style.display = 'block';
+}
+
+function changeQty(i, delta) {
+  cart[i].qty += delta;
+  if (cart[i].qty <= 0) cart.splice(i,1);
+  updateCartBadge();
+  renderCart();
+}
+
+function placeOrder() {
+  if (!cart.length) return;
+  const earned = Math.floor(cart.reduce((a,b)=>a+(b.price*b.qty),0));
+  points += earned;
+  document.getElementById('homePoints').textContent = points;
+  document.getElementById('rewardsPoints').textContent = points;
+  cart = [];
+  updateCartBadge();
+  renderCart();
+  document.getElementById('orderModal').classList.add('open');
+}
+
+function closeOrderModal() {
+  document.getElementById('orderModal').classList.remove('open');
+  showTab('home');
+}
+
+// ===== REWARDS =====
+function redeemVoucher(name, cost) {
+  if (points < cost) {
+    showToast(`❌ Not enough points! Need ${cost} pts`);
+    return;
+  }
+  points -= cost;
+  document.getElementById('homePoints').textContent = points;
+  document.getElementById('rewardsPoints').textContent = points;
+  showToast(`🎉 ${name} voucher redeemed!`);
+}
+
+// ===== NAV =====
+function showTab(tab) {
+  currentTab = tab;
+  const screens = {home:'homeScreen',menu:'menuScreen',rewards:'rewardsScreen',cart:'cartScreen',profile:'profileScreen'};
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(screens[tab]).classList.add('active');
+  if (tab==='cart') renderCart();
+  // Update all nav items
+  ['home','menu','rewards','cart','profile'].forEach(t=>{
+    ['nav','mnav','rnav','cnav','pnav'].forEach(prefix=>{
+      const el = document.getElementById(`${prefix}-${t}`);
+      if (el) el.classList.toggle('active', t===tab);
+    });
+  });
+}
+
+function showNotifToast() {
+  document.getElementById('notifBadge').style.display='none';
+  showToast('🔔 2 new notifications');
+}
+
+// ===== TOAST =====
+let toastTimeout;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(()=>t.classList.remove('show'), 2500);
+}
+</script>
+
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
